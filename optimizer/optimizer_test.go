@@ -12,3 +12,12 @@ func TestTetris(t *testing.T) {
 		t.Errorf("Tetris() = %q, want %q", value, want)
 	}
 }
+
+func TestIdentifyTetromino(t *testing.T) {
+	value, _ := identifyTetromino("##..\n.##.\n....\n....\n")
+	want := "Z"
+
+	if value != want {
+		t.Errorf("identifyTetromino() = %q, want %q", value, want)
+	}
+}
