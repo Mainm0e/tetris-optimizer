@@ -1,82 +1,57 @@
 package optimizer
 
 import (
-	"bufio"
+	"errors"
 	"fmt"
-	"os"
+	"io/ioutil"
 	"strings"
 )
 
-// fineTetromino finds the tetromino in the piece and returns the index of the tetromino
-// L = 0, J = 1, T = 2, Z = 3, S = 4, O = 5, I = 6
-func identifyTetromino(s string) (string, error) {
-	// Split the string into individual rows
-	rows := strings.Split(s, "\n")
-
-	// Trim any empty rows or trailing spaces
-	for i := 0; i < len(rows); i++ {
-		rows[i] = strings.TrimSpace(rows[i])
+// Tetris is the main function of the program. It takes a file path as an argument and returns a string.
+func Tetris(example string) (string, error) {
+	data, err := ioutil.ReadFile(example)
+	if err != nil {
+		panic(err)
 	}
-
-	fmt.Println("rows", rows)
-	// Check each tetromino shape
-	if len(rows) == 3 || rows[0] == "####" || rows[1] == "####" || rows[2] == "####" {
-		return "I", nil
-	} else if rows[0] == "##" && rows[1] == "##" {
-		return "O", nil
-	} else {
-
-		for i := 0; i < len(rows); i++ {
-			if len(rows[i]) == 2 {
-				if len(rows[i+1]) == 3 && len(rows[i-1]) == 3 {
-					return "Z", nil
-				}
-			}
-
-		}
-		return "", fmt.Errorf("Tetromino not found")
-
+	coffe, err := checkFormat(data)
+	if err != nil {
+		return "checkFormat():", err
 	}
+	if coffe == false {
+		return "Invalid file format", nil
+	}
+	moreCoffe, err := cutShape(data)
+	fmt.Println(moreCoffe)
+	return "Tetris", nil
 }
 
-// Tetris is the main function for the optimizer
-func Tetris(example string) string {
+// continue here
+// cutShape takes a slice of bytes as an argument and returns a slice of bytes and an error.
+// byte # = 35 and byte . = 46 and byte \n = 10
 
-	file, err := os.Open(example)
-	if err != nil {
-		fmt.Println("Error opening file:", err)
-		return ""
+func cutShape(data []byte) ([]byte, error) {
+	for i := 0; i < len(data); i++ {
+
 	}
-	defer file.Close()
+	return []byte{35, 35, 35, 35}, nil
+}
 
-	scanner := bufio.NewScanner(file)
-	// lIndex is the line index for counting the lines
-	var lIndex int
-	var piece string
-	var tabel []string
+// checkFormat checks the format of the input file. It takes a string as an argument and returns a boolean.
+func checkFormat(data []byte) (bool, error) {
 
-	// Read the file line by line
-	for scanner.Scan() {
-		lIndex++
-		line := scanner.Text()
-		piece += line + "\n"
-
-		if lIndex == 3 {
-			tetromino, err := identifyTetromino(piece)
-			if err != nil {
-				fmt.Println("Error finding tetromino:", err)
-				return ""
-			} else {
-				tabel = append(tabel, tetromino)
-				piece = ""
-				lIndex = 0
+	str := string(data)
+	newLine := strings.Split(str, "\n")
+	// slice line by line and check length of each line
+	if len(newLine[0]) == 4 {
+		for j := 0; j < len(newLine); j += 5 {
+			for i := 0; i < 4; i++ {
+				if len(newLine[j+i]) != len(newLine[0]) {
+					err := fmt.Sprintln("line: ", j+i, "is not valid", newLine[j+i])
+					return false, errors.New(err)
+				}
 			}
 		}
 	}
-	if err := scanner.Err(); err != nil {
-		fmt.Println("Error reading file:", err)
-		return ""
-	}
 
-	return "fileValue"
+	return true, nil
 }

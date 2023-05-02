@@ -1,23 +1,29 @@
 package optimizer
 
 import (
+	"io/ioutil"
 	"testing"
 )
 
-func TestTetris(t *testing.T) {
-	value := Tetris("../example/example00.txt")
-	want := "####\n...#\n....\n....\n"
+func TestCheckFormat(t *testing.T) {
+	input := "../example2/example01.txt"
+	data, err := ioutil.ReadFile(input)
+	expected := true
+	actual, err := checkFormat(data)
+	if actual != expected {
 
-	if value != want {
-		t.Errorf("Tetris() = %q, want %q", value, want)
+		t.Errorf("Test failed, expected: '%t', got:  '%t' , err: '%v'", expected, actual, err)
 	}
 }
 
-func TestIdentifyTetromino(t *testing.T) {
-	value, _ := identifyTetromino("##..\n.##.\n....\n....\n")
-	want := "Z"
-
-	if value != want {
-		t.Errorf("identifyTetromino() = %q, want %q", value, want)
+func TestCutShape(t *testing.T) {
+	input := "../example2/example00.txt"
+	data, err := ioutil.ReadFile(input)
+	expected := []byte{35, 35, 35, 35}
+	actual, err := cutShape(data)
+	for i := 0; i < len(expected); i++ {
+		if actual[i] != expected[i] {
+			t.Errorf("Test failed, expected: '%v', got:  '%v' , err: '%v'", expected, actual, err)
+		}
 	}
 }
